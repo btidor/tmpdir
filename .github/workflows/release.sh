@@ -5,7 +5,6 @@ set -eufx -o pipefail
 # Find the latest (annotated) tag and check that it's well-formed.
 RELEASE_TAG=$(git describe --abbrev=0)
 if [[ ! "$(git show $RELEASE_TAG)" =~ "tmpdir@$RELEASE_TAG" ]]; then
-    echo "$(git show $RELEASE_TAG)"
     echo "error: tag is missing repository and version"
     exit 1
 fi
@@ -47,22 +46,18 @@ EOF
 
 EDGES="$(echo $RESPONSE | jq -e '.data.ownerRepository.builds.edges')"
 if [ "$(echo $EDGES | jq -e '.|length')" != "1" ]; then
-    echo "$EDGES"
     echo "error: multiple builds found for $CURRENT_TAG"
     exit 1
 fi
 
 BUILD="$(echo $EDGES | jq -e '.[0].node')"
 if [ "$(echo $NODE | jq -e '.tag')" != "$CURRENT_TAG" ]; then
-    echo "$NODE"
     echo "error: tag did not match $CURRENT_TAG"
     exit 1
 else if [ "$(echo $NODE | jq -e '.senderUserPermissions')" != "admin" ]; then
-    echo "$NODE"
     echo "error: build not initiated by an admin"
     exit 1
-else if [ "$(echo $NODE | jq -e '.status')" != "COMPLETED"]; then
-    echo "$NODE"
+else if [ "$(echo $NODE | jq -e '.status')" != "COMPLETED" ]; then
     echo "error: build not in COMPLETED"
     exit 1
 fi

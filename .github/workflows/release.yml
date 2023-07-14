@@ -5,7 +5,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  draft-release:
+  prepare:
     runs-on: ubuntu-latest
     permissions:
       contents: write
