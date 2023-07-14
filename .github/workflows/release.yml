@@ -1,14 +1,3 @@
-# Release Process:
-# $ git tag -s vX.Y.Z -m "zbitvector@vX.Y.Z"
-# $ git push origin vX.Y.Z
-# prepare release
-# - title: vX.Y.Z
-# - save draft
-# wait for cirrus build...
-# check build artifacts
-# > https://api.cirrus-ci.com/v1/artifact/build/.../wheels.zip
-# trigger this workflow
-
 name: release
 on: [workflow_dispatch]
 concurrency:
