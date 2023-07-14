@@ -1,3 +1,12 @@
+# Release Process:
+# $ git tag -s vX.Y.Z -m "zbitvector@vX.Y.Z"
+# $ git push tmpdir vX.Y.Z
+# create draft release
+# ... wait for cirrus build ...
+# check build artifacts
+# > https://api.cirrus-ci.com/v1/artifact/build/.../wheels.zip
+# trigger this workflow
+
 name: release
 on: [workflow_dispatch]
 concurrency:
@@ -5,10 +14,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  prepare:
+  finalize:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # to create a draft release
+      contents: write  # release assets
+      id-token: write  # pypi oidc
     steps:
       - uses: actions/checkout@v3
         with:
@@ -16,3 +26,8 @@ jobs:
       - run: .github/workflows/release.sh
         env:
           GH_TOKEN: ${{ github.token }}
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse/
+          print-hash: true
+          repository-url: https://test.pypi.org/legacy/

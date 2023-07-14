@@ -68,10 +68,8 @@ if [ "$(echo "$BUILD" | jq -e '.status')" != '"COMPLETED"' ]; then
     exit 1
 fi
 
-# Download the build artifacts from Cirrus CI
+# Download the build artifacts from Cirrus CI and upload them to the GitHub
+# release
 curl --output wheels.zip https://api.cirrus-ci.com/v1/artifact/build/6420014010466304/wheels.zip
 unzip wheels.zip
-
-# Create a draft release on GitHub and upload the artifacts
-gh release create "$RELEASE_TAG" --draft --generate-notes --verify-tag
 gh release upload "$RELEASE_TAG" wheelhouse/*
