@@ -9,7 +9,7 @@ if [[ ! "$(git show $RELEASE_TAG)" =~ "tmpdir@$RELEASE_TAG" ]]; then
     exit 1
 fi
 
-# curl https://github.com/btidor.gpg | gpg --import
+curl https://github.com/btidor.gpg | gpg --import
 git verify-tag "$RELEASE_TAG"
 
 # Query Cirrus CI to find the build that was triggered by this tag being
