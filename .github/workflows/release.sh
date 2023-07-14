@@ -46,25 +46,25 @@ EOF
 
 EDGES="$(echo "$RESPONSE" | jq -e '.data.ownerRepository.builds.edges')"
 if [ "$(echo "$EDGES" | jq -e '.|length')" != "1" ]; then
-    echo "error: multiple builds found for $CURRENT_TAG"
+    echo "error: multiple builds found for $RELEASE_TAG"
     exit 1
 fi
 
 BUILD="$(echo "$EDGES" | jq -e '.[0].node')"
 echo "BBB"
-if [ "$(echo "$NODE" | jq -e '.tag')" != "$CURRENT_TAG" ]; then
-    echo "error: tag did not match $CURRENT_TAG"
+if [ "$(echo "$BUILD" | jq -e '.tag')" != "$RELEASE_TAG" ]; then
+    echo "error: tag did not match $RELEASE_TAG"
     exit 1
 fi
 echo "CCC"
 
-if [ "$(echo "$NODE" | jq -e '.senderUserPermissions')" != "admin" ]; then
+if [ "$(echo "$BUILD" | jq -e '.senderUserPermissions')" != "admin" ]; then
     echo "error: build not initiated by an admin"
     exit 1
 fi
 echo "DDD"
 
-if [ "$(echo "$NODE" | jq -e '.status')" != "COMPLETED" ]; then
+if [ "$(echo "$BUILD" | jq -e '.status')" != "COMPLETED" ]; then
     echo "error: build not in COMPLETED"
     exit 1
 fi
