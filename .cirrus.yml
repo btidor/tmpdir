@@ -1,4 +1,14 @@
-package_task:
+sdist_task:
+  container:
+    image: python:latest
+  setup_script:
+    python3 -m pip install build
+  build_script:
+    python3 -m build --sdist
+  wheels_artifacts:
+    path: "dist/*.tar.gz"
+
+bdist_task:
   matrix:
     - name: "package / manylinux-x86-64"
       compute_engine_instance: &BUILDER_TEMPLATE
