@@ -45,10 +45,7 @@ package_task:
         CIBW_ARCHS: "x86_64"
         CIBW_BEFORE_ALL: "sudo arch -x86_64 make ci"
   setup_script:
-    # Cirrus doesn't pull Git tags, which are needed by the cibuildwheel SCM
-    # plugin. Add it ourselves, but only if this build was triggered from a tag
-    # event.
-    - bash -c '[ -n "$CIRRUS_TAG" ] && git tag "$CIRRUS_TAG"'
+    - git tag -l
     - python3 -m pip install cibuildwheel==2.13.0
   build_script:
     - python3 -m cibuildwheel
