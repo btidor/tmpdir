@@ -44,20 +44,22 @@ RESPONSE=$(curl https://api.cirrus-ci.com/graphql --data @- <<EOF
 EOF
 )
 
-EDGES="$(echo $RESPONSE | jq -e '.data.ownerRepository.builds.edges')"
-if [ "$(echo $EDGES | jq -e '.|length')" != "1" ]; then
+EDGES="$(echo "$RESPONSE" | jq -e '.data.ownerRepository.builds.edges')"
+if [ "$(echo "$EDGES" | jq -e '.|length')" != "1" ]; then
     echo "error: multiple builds found for $CURRENT_TAG"
     exit 1
 fi
 
-BUILD="$(echo $EDGES | jq -e '.[0].node')"
-if [ "$(echo $NODE | jq -e '.tag')" != "$CURRENT_TAG" ]; then
+echo "BBB"
+BUILD="$(echo "$EDGES" | jq -e '.[0].node')"
+echo "AAA"
+if [ "$(echo "$NODE" | jq -e '.tag')" != "$CURRENT_TAG" ]; then
     echo "error: tag did not match $CURRENT_TAG"
     exit 1
-else if [ "$(echo $NODE | jq -e '.senderUserPermissions')" != "admin" ]; then
+else if [ "$(echo "$NODE" | jq -e '.senderUserPermissions')" != "admin" ]; then
     echo "error: build not initiated by an admin"
     exit 1
-else if [ "$(echo $NODE | jq -e '.status')" != "COMPLETED" ]; then
+else if [ "$(echo "$NODE" | jq -e '.status')" != "COMPLETED" ]; then
     echo "error: build not in COMPLETED"
     exit 1
 fi
@@ -67,7 +69,7 @@ gh release create "$RELEASE_TAG" --draft --generate-notes --verify-tag
 curl --output wheels.zip https://api.cirrus-ci.com/v1/artifact/build/6420014010466304/wheels.zip
 unzip wheels.zip
 cd wheelhouse
-for file in "*.whl"; do
+for file in "*"; do
     gh api --method POST \
         -H "Accept: application/vnd.github+json" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
