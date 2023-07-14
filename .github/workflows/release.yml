@@ -1,5 +1,8 @@
 name: release
 on: [workflow_dispatch]
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   draft-release:
@@ -8,6 +11,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
-      - run: gh release create v1.2.0 --draft --generate-notes --verify-tag
+      - run: .github/workflows/release.sh
         env:
           GH_TOKEN: ${{ github.token }}
