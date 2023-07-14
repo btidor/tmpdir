@@ -2,14 +2,14 @@
 
 set -eufx -o pipefail
 
-# Find the latest (annotated) tag and check that it's well-formed.
+# Find the latest (annotated) tag and check that it's well-formed
 RELEASE_TAG=$(git describe --abbrev=0)
 if [[ ! "$(git show $RELEASE_TAG)" =~ "tmpdir@$RELEASE_TAG" ]]; then
     echo "error: tag is missing repository and version"
     exit 1
 fi
 
-curl https://github.com/btidor.gpg | gpg --import
+# curl https://github.com/btidor.gpg | gpg --import
 git verify-tag "$RELEASE_TAG"
 
 # Query Cirrus CI to find the build that was triggered by this tag being
@@ -44,6 +44,7 @@ RESPONSE=$(curl https://api.cirrus-ci.com/graphql --data @- <<EOF
 EOF
 )
 
+# Validate the response from Cirrus CI
 EDGES="$(echo "$RESPONSE" | jq -e '.data.ownerRepository.builds.edges')"
 if [ "$(echo "$EDGES" | jq -e '.|length')" != "1" ]; then
     echo "error: multiple builds found for $RELEASE_TAG"
@@ -51,29 +52,29 @@ if [ "$(echo "$EDGES" | jq -e '.|length')" != "1" ]; then
 fi
 
 BUILD="$(echo "$EDGES" | jq -e '.[0].node')"
-echo "BBB"
-if [ "$(echo "$BUILD" | jq -e '.tag')" != "$RELEASE_TAG" ]; then
+if [ "$(echo "$BUILD" | jq -e '.tag')" != "\"$RELEASE_TAG\"" ]; then
     echo "error: tag did not match $RELEASE_TAG"
     exit 1
 fi
-echo "CCC"
 
-if [ "$(echo "$BUILD" | jq -e '.senderUserPermissions')" != "admin" ]; then
+if [ "$(echo "$BUILD" | jq -e '.senderUserPermissions')" != '"admin"' ]; then
     echo "error: build not initiated by an admin"
     exit 1
 fi
-echo "DDD"
 
-if [ "$(echo "$BUILD" | jq -e '.status')" != "COMPLETED" ]; then
+if [ "$(echo "$BUILD" | jq -e '.status')" != '"COMPLETED"' ]; then
     echo "error: build not in COMPLETED"
     exit 1
 fi
-echo "EEE"
 
-gh release create "$RELEASE_TAG" --draft --generate-notes --verify-tag
-
+# Download the build artifacts from Cirrus CI
 curl --output wheels.zip https://api.cirrus-ci.com/v1/artifact/build/6420014010466304/wheels.zip
 unzip wheels.zip
+
+# Create a draft release on GitHub
+gh release create "$RELEASE_TAG" --draft --generate-notes --verify-tag
+
+# Upload the build artifacts to the GitHub release
 cd wheelhouse
 for file in "*"; do
     gh api --method POST \
