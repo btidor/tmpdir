@@ -77,7 +77,7 @@ gh release create "$RELEASE_TAG" --draft --generate-notes --verify-tag
 
 # Upload the build artifacts to the GitHub release
 cd wheelhouse
-for file in "*"; do
+for file in *; do
     gh api --method POST \
         -H "Accept: application/vnd.github+json" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
