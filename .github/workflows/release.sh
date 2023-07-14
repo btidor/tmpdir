@@ -50,19 +50,25 @@ if [ "$(echo "$EDGES" | jq -e '.|length')" != "1" ]; then
     exit 1
 fi
 
-echo "BBB"
 BUILD="$(echo "$EDGES" | jq -e '.[0].node')"
-echo "AAA"
+echo "BBB"
 if [ "$(echo "$NODE" | jq -e '.tag')" != "$CURRENT_TAG" ]; then
     echo "error: tag did not match $CURRENT_TAG"
     exit 1
-else if [ "$(echo "$NODE" | jq -e '.senderUserPermissions')" != "admin" ]; then
+fi
+echo "CCC"
+
+if [ "$(echo "$NODE" | jq -e '.senderUserPermissions')" != "admin" ]; then
     echo "error: build not initiated by an admin"
     exit 1
-else if [ "$(echo "$NODE" | jq -e '.status')" != "COMPLETED" ]; then
+fi
+echo "DDD"
+
+if [ "$(echo "$NODE" | jq -e '.status')" != "COMPLETED" ]; then
     echo "error: build not in COMPLETED"
     exit 1
 fi
+echo "EEE"
 
 gh release create "$RELEASE_TAG" --draft --generate-notes --verify-tag
 
