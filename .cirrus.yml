@@ -34,19 +34,19 @@ package_task:
         CIBW_BUILD: "*musllinux*"
     - name: "package / macosx-arm64"
       macos_instance:
-        image: ghcr.io/cirruslabs/macos-monterey-xcode
+        image: ghcr.io/cirruslabs/macos-monterey-xcode:latest
       env:
         CIBW_ARCHS: "arm64"
         CIBW_BEFORE_ALL: "sudo make ci"
     - name: "package / macosx-x86-64"
       macos_instance:
-        image: ghcr.io/cirruslabs/macos-monterey-xcode
+        image: ghcr.io/cirruslabs/macos-monterey-xcode:latest
       env:
         CIBW_ARCHS: "x86_64"
         CIBW_BEFORE_ALL: "sudo arch -x86_64 make ci"
   setup_script:
     - git tag -l
-    - python3 -m pip install cibuildwheel==2.13.0
+    - python3 -m pip install cibuildwheel==2.14.0
   build_script:
     - python3 -m cibuildwheel
   wheels_artifacts:
