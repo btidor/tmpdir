@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -eufx -o pipefail
+set -eux -o pipefail
+shopt -s failglob
 
 # Find the latest (annotated) tag and check that it's well-formed
 RELEASE_TAG=$(git describe --abbrev=0)

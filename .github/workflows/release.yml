@@ -8,7 +8,7 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write  # to create a draft release
     steps:
       - uses: actions/checkout@v3
         with:
