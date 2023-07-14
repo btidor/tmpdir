@@ -1,0 +1,36 @@
+# Release Process:
+# $ git tag -s vX.Y.Z -m "zbitvector@vX.Y.Z"
+# $ git push origin vX.Y.Z
+# prepare release
+# - title: vX.Y.Z
+# - save draft
+# wait for cirrus build...
+# check build artifacts
+# > https://api.cirrus-ci.com/v1/artifact/build/.../wheels.zip
+# trigger this workflow
+
+name: release
+on: [workflow_dispatch]
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write  # github release assets
+      id-token: write  # pypi oidc
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: .github/workflows/release.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse/
+          print-hash: true
+          repository-url: https://test.pypi.org/legacy/
