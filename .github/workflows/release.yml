@@ -11,6 +11,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - run: .github/workflows/release.sh
         env:
           GH_TOKEN: ${{ github.token }}
