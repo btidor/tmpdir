@@ -72,15 +72,6 @@ fi
 curl --output wheels.zip https://api.cirrus-ci.com/v1/artifact/build/6420014010466304/wheels.zip
 unzip wheels.zip
 
-# Create a draft release on GitHub
+# Create a draft release on GitHub and upload the artifacts
 gh release create "$RELEASE_TAG" --draft --generate-notes --verify-tag
-
-# Upload the build artifacts to the GitHub release
-cd wheelhouse
-for file in *; do
-    gh api --method POST \
-        -H "Accept: application/vnd.github+json" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        -f "@$file" \
-        "/repos/btidor/tmpdir/releases/$RELEASE_TAG/assets?name=$file"
-done
+gh release upload "$RELEASE_TAG" wheelhouse/*
